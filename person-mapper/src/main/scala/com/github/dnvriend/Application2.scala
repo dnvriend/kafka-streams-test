@@ -8,22 +8,11 @@ import java.util.Properties
 
 import org.apache.kafka.common.serialization._
 import org.apache.kafka.streams._
-import org.apache.kafka.streams.kstream.{ ForeachAction, KStreamBuilder, ValueMapper }
+import org.apache.kafka.streams.kstream.KStreamBuilder
 
 import scala.language.implicitConversions
 
 object Application2 extends App {
-
-  implicit def functionToValueMapper[V1, V2](f: (V1) => V2): ValueMapper[V1, V2] =
-    new ValueMapper[V1, V2] {
-      override def apply(value: V1): V2 = f(value)
-    }
-
-  implicit def functionToForeachAction[K, V](f: (K, V) => Unit): ForeachAction[K, V] =
-    new ForeachAction[K, V] {
-      override def apply(key: K, value: V): Unit = f(key, value)
-    }
-
   val streamingConfig: Properties = {
     val settings = new Properties
     settings.put(StreamsConfig.APPLICATION_ID_CONFIG, "application2")
@@ -38,6 +27,8 @@ object Application2 extends App {
   // read the mappedPersonCreated
   val foreachBuilder: KStreamBuilder = new KStreamBuilder
   foreachBuilder.stream[Array[Byte], String]("MappedPersonCreated")
-    .foreach((key: Array[Byte], value: String) => println(s"==> MappedPersonCreated >><< key='$key', value='$value'"))
+    .foreach { (key, value) =>
+      println(s"==> [Application2] ==> key='$key', value='$value'")
+    }
   new KafkaStreams(foreachBuilder, streamingConfig).start()
 }
