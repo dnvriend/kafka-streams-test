@@ -19,7 +19,7 @@ package impl
 import java.util.UUID
 import javax.inject.Inject
 
-import akka.actor.{ Actor, ActorSystem, Props }
+import akka.actor.{ Actor, ActorSystem, Cancellable, Props }
 import api.{ CreatePersonRequestMessage, PersonService, TopicMessagePersonCreated }
 import com.lightbend.lagom.scaladsl.api.ServiceCall
 import com.lightbend.lagom.scaladsl.api.broker.Topic
@@ -29,7 +29,7 @@ import com.lightbend.lagom.scaladsl.persistence._
 import play.api.libs.json.Json
 
 import scala.compat.Platform
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ ExecutionContext, Future }
 import scala.util.Random
 
 class LagomPersonService @Inject() (persistentEntityRegistry: PersistentEntityRegistry, system: ActorSystem)(implicit ec: ExecutionContext) extends PersonService {
@@ -54,25 +54,44 @@ class LagomPersonService @Inject() (persistentEntityRegistry: PersistentEntityRe
 }
 
 class PersonCreator(persistentEntityRegistry: PersistentEntityRegistry)(implicit ec: ExecutionContext) extends Actor {
+
   import scala.concurrent.duration._
-  override def preStart(): Unit = {
-    context.system.scheduler.schedule(5.seconds, 2.second, self, "create")
+
+  def scheduleCreatePerson: Cancellable = {
+    //    context.system.scheduler.scheduleOnce(0.seconds, self, "create")
+    context.system.scheduler.scheduleOnce(1.seconds, self, "create")
   }
+
+  def scheduleStart: Cancellable =
+    context.system.scheduler.scheduleOnce(2.seconds, self, "start")
+
+  def createPerson: Future[Unit] = {
+    val id: UUID = UUID.randomUUID()
+    val idAsString: String = id.toString
+    val ref = persistentEntityRegistry.refFor[PersonEntity](idAsString)
+    val cmd = CreatePerson(id, s"foo$id", Random.nextInt(100), Platform.currentTime)
+    println(s"===> PersonCreator creating person: $cmd")
+    ref.ask(cmd).map { _ =>
+      scheduleCreatePerson
+    }.map(_ => ())
+  }
+
   override def receive: Receive = {
+    case "start" =>
+      scheduleCreatePerson
+    case "create" =>
+      createPerson
     case _ =>
-      val id: UUID = UUID.randomUUID()
-      val idAsString: String = id.toString
-      val ref = persistentEntityRegistry.refFor[PersonEntity](idAsString)
-      val cmd = CreatePerson(id, s"foo$id", Random.nextInt(100), Platform.currentTime)
-      println(s"===> PersonCreator creating person: $cmd")
-      ref.ask(cmd)
   }
+
+  scheduleStart
 }
 
 class PersonEntity extends PersistentEntity {
   override type Command = PersonCommand[_]
   override type Event = PersonEvent
   override type State = Option[Person]
+
   override def initialState: Option[Person] = Option.empty[Person]
 
   override def behavior: Behavior = {
@@ -97,9 +116,11 @@ class PersonEntity extends PersistentEntity {
 
 // commands
 sealed trait PersonCommand[R] extends ReplyType[R]
+
 object CreatePerson {
   implicit val format = Json.format[CreatePerson]
 }
+
 final case class CreatePerson(id: UUID, name: String, age: Int, time: Long) extends PersonCommand[UUID]
 
 // events
@@ -117,7 +138,9 @@ final case class PersonCreated(id: UUID, name: String, age: Int, time: Long) ext
 // state
 object Person {
   implicit val format = Json.format[Person]
+
   def time: Long = Platform.currentTime
+
   def handleCommand(state: Option[Person], cmd: PersonCommand[_]): (Option[Person], PersonEvent) = cmd match {
     case CreatePerson(id, name, age, _) => (Option(Person(id, name, age)), PersonCreated(id, name, age, time))
   }

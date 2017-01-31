@@ -44,6 +44,8 @@ object Application extends App with DefaultJsonProtocol {
 
   def random(xs: List[String]): String = xs.drop(Random.nextInt(xs.length)).headOption.getOrElse("No entry")
 
+  var count = 0L
+
   val builder: KStreamBuilder = new KStreamBuilder
   // read the input to a KStream instance
   builder
@@ -52,9 +54,11 @@ object Application extends App with DefaultJsonProtocol {
     .mapValues(event => (event, event.copy(name = s"${random(names)} ${random(lastNames)}")))
     .mapValues[String] {
       case (old, event) =>
+        count += 1
         val json = event.toJson.prettyPrint
         println(
           s"""==> [Application]:
+          |count: $count
           |oldEvent: $old
           |mapped: $event
           |Publishing to 'MappedPersonCreated':

@@ -13,6 +13,8 @@ import org.apache.kafka.streams.kstream.KStreamBuilder
 import scala.language.implicitConversions
 
 object Application2 extends App {
+  var count = 0L
+
   val streamingConfig: Properties = {
     val settings = new Properties
     settings.put(StreamsConfig.APPLICATION_ID_CONFIG, "application2")
@@ -28,7 +30,8 @@ object Application2 extends App {
   val foreachBuilder: KStreamBuilder = new KStreamBuilder
   foreachBuilder.stream[Array[Byte], String]("MappedPersonCreated")
     .foreach { (key, value) =>
-      println(s"==> [Application2] ==> key='$key', value='$value'")
+      count += 1
+      println(s"==> [Application2 - $count] ==> key='$key', value='$value'")
     }
   new KafkaStreams(foreachBuilder, streamingConfig).start()
 }
