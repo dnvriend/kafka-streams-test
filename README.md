@@ -1,6 +1,6 @@
 # kafka-streams-test
 A small study project on [Kafka-Streams](http://docs.confluent.io/3.1.2/streams) and the [Confluent Platform](http://docs.confluent.io/3.1.2/)
-which is a stream data platform that leverages Apache Kafka to enable you to organize and manage data from many
+which is a stream data platform that leverages [Apache Kafka](http://kafka.apache.org/) to enable you to organize and manage data from many
 different sources with one reliable, high performance system. The Confluent Platform can be downloaded [here](https://www.confluent.io/download-center/).
 
 ## Requirements
@@ -74,12 +74,14 @@ otherwise the number of records that must be maintained for performing the aggre
 ## Stateless transformations
 Stateless transformations include:
 
+```
 - filter[K, V]((K, V) => Boolean): KStream[K, V]: Create a new instance of KStream that consists of all elements of this stream which satisfy a predicate.
 - filterNot[K, V]((K, V) => Boolean): KStream[K, V]: Create a new instance of KStream that consists all elements of this stream which do not satisfy a predicate.
 - foreach[K, V]((K, V) => Unit): Unit: Perform an action on each element of KStream. Note that this is a terminal operation that returns Unit
 - map[K, V, R](K, V) => R): KStream[K, R]: Create a new instance of KStream by transforming each element in this stream into a different element in the new stream
 - mapValues[K, V, R](V => R): KStream[K, R]: Create a new instance of KStream by transforming the value of each element in this stream into a new value in the new stream
 - selectKey[K, V, R]((K, V) => R): KStream[K, R]: Create a new key from the current key and value.
+```
 
 Most of them can be applied to both [KStream](http://docs.confluent.io/3.1.2/streams/javadocs/index.html) and [KTable](http://docs.confluent.io/3.1.2/streams/javadocs/index.html),
 where users usually pass a customized function to these functions as a parameter.
@@ -87,9 +89,11 @@ where users usually pass a customized function to these functions as a parameter
 ## Stateful transformations
 Available [stateful transformations](http://docs.confluent.io/3.1.2/streams/developer-guide.html#stateful-transformations) include:
 
+```
 - joins (KStream/KTable): join, leftJoin, outerJoin
 - aggregations (KStream/KTable): groupBy, groupByKey (KStream) plus count, reduce, aggregate (via KGroupedStream and KGroupedTable)
 - general transformations (KStream): process, transform, transformValues
+```
 
 Stateful transformations are transformations where the processing logic requires accessing an associated state for processing
 and producing outputs. For example, in join and aggregation operations, a windowing state is usually used to store all the
