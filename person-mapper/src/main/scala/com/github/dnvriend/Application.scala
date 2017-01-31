@@ -4,9 +4,6 @@ package com.github.dnvriend
 // see: https://github.com/confluentinc/kafka/tree/trunk/streams/src
 // see: http://docs.confluent.io/3.1.2/streams/index.html
 
-import java.util.Properties
-
-import org.apache.kafka.common.serialization._
 import org.apache.kafka.streams._
 import org.apache.kafka.streams.kstream.KStreamBuilder
 import spray.json.{ DefaultJsonProtocol, _ }
@@ -18,6 +15,7 @@ import scala.util.Random
 final case class PersonCreated(id: String, name: String, age: Int, time: Long)
 
 // see: http://deron.meranda.us/data/
+// see: http://docs.confluent.io/3.1.2/streams/developer-guide.html#streams-developer-guide-dsl
 object Application extends App with DefaultJsonProtocol {
   implicit val format = jsonFormat4(PersonCreated)
 
@@ -28,16 +26,6 @@ object Application extends App with DefaultJsonProtocol {
       .flatMap(_.headOption)
       .toList
 
-  val streamingConfig: Properties = {
-    val settings = new Properties
-    settings.put(StreamsConfig.APPLICATION_ID_CONFIG, "application1")
-    settings.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092")
-    settings.put(StreamsConfig.ZOOKEEPER_CONNECT_CONFIG, "localhost:2181")
-    // Specify default (de)serializers for record keys and for record values.
-    settings.put(StreamsConfig.KEY_SERDE_CLASS_CONFIG, Serdes.ByteArray.getClass.getName)
-    settings.put(StreamsConfig.VALUE_SERDE_CLASS_CONFIG, Serdes.String.getClass.getName)
-    settings
-  }
   val lastNames: List[String] = getData("/census-dist-2500-last.csv")
 
   val names: List[String] = getData("/census-dist-female-first.csv") ++ getData("/census-dist-male-first.csv")
@@ -68,5 +56,5 @@ object Application extends App with DefaultJsonProtocol {
         json
     }.to("MappedPersonCreated")
 
-  new KafkaStreams(builder, streamingConfig).start()
+  new KafkaStreams(builder, KafkaConfig.config("person-mapper")).start()
 }
