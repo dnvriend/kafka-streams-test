@@ -35,6 +35,331 @@ Launch the second application:
 sbt "project personMapper" "runMain com.github.dnvriend.Application2"
 ```
 
+## Apache Zookeeper
+[Apache ZooKeeper (aka. Zookeeper)](https://zookeeper.apache.org) is a distributed, open-source coordination service for distributed applications.
+It exposes a simple set of primitives that distributed applications can build upon to implement higher level services for synchronization,
+configuration maintenance, and groups and naming. It is designed to be easy to program to, and uses a data model
+styled after the familiar directory tree structure of file systems.
+
+ZooKeeper allows distributed processes to coordinate with each other through a shared hierarchal namespace which is organized similarly
+to a standard file system. The name space consists of data registers - called znodes, in ZooKeeper parlance - and these are similar to
+files and directories. Unlike a typical file system, which is designed for storage, ZooKeeper data is kept in-memory, which means
+ZooKeeper can achieve high throughput and low latency numbers.
+
+ZooKeeper is very fast and very simple. Since its goal, though, is to be a basis for the construction of more complicated services,
+such as synchronization, it provides a set of guarantees. These are:
+
+- __Sequential Consistency__: Updates from a client will be applied in the order that they were sent.
+- __Atomicity__: Updates either succeed or fail. No partial results.
+- __Single System Image__: A client will see the same view of the service regardless of the server that it connects to.
+- __Reliability__: Once an update has been applied, it will persist from that time forward until a client overwrites the update.
+- __Timeliness__: The clients view of the system is guaranteed to be up-to-date within a certain time bound.
+
+ZooKeeper consists of multiple components:
+
+- __Client__: Client is the Java client library, used by applications to connect to a ZooKeeper ensemble.
+- __Server__: Server is the Java server that runs on the ZooKeeper ensemble nodes.
+
+## Running Zookeeper
+Zookeeper can run in [Clustered (Multi-Server) Setup](https://zookeeper.apache.org/doc/trunk/zookeeperAdmin.html#sc_zkMulitServerSetup) or
+in [Single Server and Developer Setup](https://zookeeper.apache.org/doc/trunk/zookeeperAdmin.html#sc_singleAndDevSetup). In the [Lagom
+developer environment (sbt project with lagom plugin)](http://www.lagomframework.com/documentation/1.3.x/scala/KafkaServer.html) a developer
+zookeeper instance will be started when you type either `runAll` or `lagomKafkaStart`.
+
+The [Confluent Platform](http://docs.confluent.io/3.1.2/) comes with a Zookeeper in the [distribution zip](https://www.confluent.io/download/)
+and comes with a script to launch a local zookeeper instance. Setting up a ZooKeeper server in standalone mode is straightforward. The server
+is contained in a single JAR file, so installation consists of creating a configuration. Once you've downloaded a stable ZooKeeper
+release unpack it and cd to the root. To start ZooKeeper you need a configuration file for example the following comes from the confluent platform:
+
+```
+dataDir=/tmp/zookeeper
+# the port at which the clients will connect
+clientPort=2181
+# disable the per-ip limit on the number of connections
+# since this is a non-production config
+maxClientCnxns=0
+```
+
+Both the vanilla zookeeper distribution or the confluent distribution has the same way to launch zookeeper in standalone mode,
+there is a 'launch` script and a 'configuration script'. The vanilla zookeeper distribution uses the 'bin/zkServer.sh start' script
+in where you put the config in the directory 'conf/zoo.cfg' and the confluent distribution lets you specify a config file to use:
+
+```bash
+cd $CONFLUENT_PLATFORM_HOME
+./bin/zookeeper-server-start ./etc/kafka/zookeeper.properties
+```
+
+For more information, [confluent.io has ideas on operating Zookeeper](http://kafka.apache.org/documentation/#zk) good
+to know before installing a zookeeper on a platform.
+
+## Apache Kafka
+[Apache Kafka (aka. Kafka)](http://kafka.apache.org/) is an open-source stream processing platform developed by the Apache Software Foundation written in Scala and Java.
+The project aims to provide a unified, high-throughput, low-latency platform for handling real-time data feeds. Its storage layer is
+essentially a "massively scalable pub/sub message queue architected as a distributed transaction log making it highly valuable
+for enterprise infrastructures to process streaming data. Additionally, Kafka connects to external systems (for data import/export)
+via [Kafka Connect](http://docs.confluent.io/3.1.2/connect/index.html) and provides [Kafka Streams](http://docs.confluent.io/3.1.2/streams/index.html),
+a Java stream processing library. The design of Kafka is heavily influenced by database transaction logs.
+
+Kafka lets you:
+
+- publish and subscribe to streams of records,
+- store streams of records in a fault tolerant way,
+- you process streams of records.
+
+Kafka consists of two components:
+
+- __Kafka Broker__: The Kafka broker that form the mesaging, data persistency and storage tier of Apache Kafka and usually run in a distributed cluster.
+- __Kafka Java Client APIs__:
+  - [Producer API](http://docs.confluent.io/3.1.2/clients/index.html#kafka-clients): A Java Client that allows an application to publish a stream records to one or more Kafka topics.
+    For Scala a [reactive-streams compatible kafka connector 'reactive-kafka'](https://github.com/akka/reactive-kafka) is available that is maintained by the [Akka.io team](http://akka.io/)
+    that makes publishing messages to Kafka a breeze.
+  - [Consumer API](http://docs.confluent.io/3.1.2/clients/index.html#kafka-clients): A Java Client that allows an application to subscribe to one or more topics and process the stream of records produced to them.
+    For Scala a [reactive-streams compatible kafka connector 'reactive-kafka'](https://github.com/akka/reactive-kafka) is available that is maintained by the [Akka.io team](http://akka.io/)
+    that makes consuming messages from Kafka a breeze.
+  - [Streams API](http://docs.confluent.io/3.1.2/streams/index.html#kafka-streams): Allows an application to act as a stream processor, consuming an input stream from one or more topics and producing an output stream to one or more output topics, effectively transforming the input streams to output streams. It has a very low barrier to entry, easy operationalization, and a high-level DSL for writing stream processing applications. As such it is the most convenient yet scalable option to process and analyze data that is backed by Kafka.
+  - [Connect API](http://docs.confluent.io/3.1.2/connect/intro.html#connect-intro): A component to stream data between Kafka and other data systems in a scalable and reliable way. It makes it simple to configure connectors to move data into and out of Kafka. Kafka Connect can ingest entire databases or collect metrics from all your application servers into Kafka topics, making the data available for stream processing. Connectors can also deliver data from Kafka topics into secondary indexes like Elasticsearch or into batch systems such as Hadoop for offline analysis.
+
+## Running Kafka
+Kafka uses ZooKeeper so you need to first start a ZooKeeper server if you don't already have one. Depending on your environment
+for example, using Lagom you can just type `lagomKafkaStart` or `runAll` if you want to run everything of Lagom including Zookeeper,
+Kafka and Cassandra. If you are using the confluent plaform distribution then you can just type:
+
+```bash
+cd $CONFLUENT_PLATFORM_HOME
+./bin/zookeeper-server-start ./etc/kafka/zookeeper.properties
+```
+
+To start Kafka you need a configuration. By default the following configuration is used when using the
+confluent platform distribution:
+
+```
+# The id of the broker. This must be set to a unique integer for each broker.
+broker.id=0
+
+# The number of threads handling network requests
+num.network.threads=3
+
+# The number of threads doing disk I/O
+num.io.threads=8
+
+# The send buffer (SO_SNDBUF) used by the socket server
+socket.send.buffer.bytes=102400
+
+# The receive buffer (SO_RCVBUF) used by the socket server
+socket.receive.buffer.bytes=102400
+
+# The maximum size of a request that the socket server will accept (protection against OOM)
+socket.request.max.bytes=104857600
+
+# A comma seperated list of directories under which to store log files
+log.dirs=/tmp/kafka-logs
+
+# The default number of log partitions per topic. More partitions allow greater
+# parallelism for consumption, but this will also result in more files across
+# the brokers.
+num.partitions=1
+
+# The number of threads per data directory to be used for log recovery at startup and flushing at shutdown.
+# This value is recommended to be increased for installations with data dirs located in RAID array.
+num.recovery.threads.per.data.dir=1
+
+# The minimum age of a log file to be eligible for deletion
+log.retention.hours=1
+#log.retention.hours=168
+
+# The maximum size of a log segment file. When this size is reached a new log segment will be created.
+log.segment.bytes=1073741824
+
+# The interval at which log segments are checked to see if they can be deleted according
+# to the retention policies
+# 5 seconds
+log.retention.check.interval.ms=5000
+# 5 minutes
+#log.retention.check.interval.ms=300000
+
+zookeeper.connect=localhost:2181
+zookeeper.connection.timeout.ms=6000
+confluent.support.metrics.enable=true
+confluent.support.customer.id=anonymous
+```
+
+You can launch kafka with the following command:
+
+```bash
+cd $CONFLUENT_PLATFORM_HOME
+./bin/kafka-server-start ./etc/kafka/server.properties
+```
+
+To launch a couple of
+
+To create a topic called 'test':
+
+```bash
+cd $CONFLUENT_PLATFORM_HOME
+./bin/kafka-topics --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic test
+```
+
+We can query Kafka for topics with the following command:
+
+```bash
+cd $CONFLUENT_PLATFORM_HOME
+./bin/kafka-topics --list --zookeeper localhost:2181
+```
+
+We can consume from a topic using the following command:
+
+```bash
+cd $CONFLUENT_PLATFORM_HOME
+./bin/kafka-console-consumer --bootstrap-server localhost:9092 --topic test --from-beginning
+```
+
+We can produce to a topic using the following command:
+
+```bash
+cd $CONFLUENT_PLATFORM_HOME
+./bin/kafka-console-producer --broker-list localhost:9092 --topic test
+```
+
+## Kafka Messages
+[Messages](http://kafka.apache.org/documentation/#messages) consist of a fixed-size header, a variable length opaque key byte array
+and a variable length opaque value byte array. The header contains the following fields:
+
+- A CRC32 checksum to detect corruption or truncation.
+- A format version (magic byte)
+- An attributes identifier
+- A timestamp
+
+Leaving the key and value opaque is the right decision: there is a great deal of progress being made on serialization libraries right now,
+and any particular choice is unlikely to be right for all uses. Needless to say a particular application using Kafka would likely mandate
+a particular serialization type as part of its usage.
+
+```scala
+/**
+ * 1. 4 byte "CRC32" of the message
+ * 2. 1 byte "magic" identifier to allow format changes, value is 0 or 1
+ * 3. 1 byte "attributes" identifier to allow annotations on the message independent of the version
+ *    bit 0 ~ 2 : Compression codec.
+ *      0 : no compression
+ *      1 : gzip
+ *      2 : snappy
+ *      3 : lz4
+ *    bit 3 : Timestamp type
+ *      0 : create time
+ *      1 : log append time
+ *    bit 4 ~ 7 : reserved
+ * 4. (Optional) 8 byte timestamp only if "magic" identifier is greater than 0
+ * 5. 4 byte key length, containing length K
+ * 6. K byte key
+ * 7. 4 byte payload length, containing length V
+ * 8. V byte payload
+ */
+```
+
+## Logs
+A [log](http://kafka.apache.org/documentation/#log) for a topic named "my_topic" with two partitions consists of two directories
+(namely my_topic_0 and my_topic_1) populated with data files containing the messages for that topic. The log (directories) will be
+created in the directory that has been configured in Kafka and is the `log.dirs=/tmp/kafka-logs` key.
+
+The format of the log files is a sequence of "log entries"; each log entry is a 4 byte integer N storing the message length
+which is followed by the N message bytes. Each message is uniquely identified by a 64-bit integer offset giving the byte
+position of the start of this message in the stream of all messages ever sent to that topic on that partition.
+
+The on-disk format of each message is given below. Each log file is named with the offset of the first message it contains.
+So the first file created will be 00000000000.kafka, and each additional file will have an integer name roughly S bytes
+from the previous file where S is the max log file size given in the configuration.
+
+The exact binary format for messages is versioned and maintained as a standard interface so message sets can be transferred
+between producer, broker, and client without recopying or conversion when desirable. This format is as follows:
+
+```
+On-disk format of a message
+
+offset         : 8 bytes
+message length : 4 bytes (value: 4 + 1 + 1 + 8(if magic value > 0) + 4 + K + 4 + V)
+crc            : 4 bytes
+magic value    : 1 byte
+attributes     : 1 byte
+timestamp      : 8 bytes (Only exists when magic value is greater than zero)
+key length     : 4 bytes
+key            : K bytes
+value length   : 4 bytes
+value          : V bytes
+```
+
+To simplify the lookup structure we decided to use a simple per-partition atomic counter which could be coupled with
+the partition id and node id to uniquely identify a message; this makes the lookup structure simpler, though multiple
+seeks per consumer request are still likely. However once we settled on a counter, the jump to directly using the offset
+seemed natural—both after all are monotonically increasing integers unique to a partition. Since the offset is hidden
+from the consumer API this decision is ultimately an implementation detail and we went with the more efficient approach.
+
+## Writes
+The log allows [serial appends](http://kafka.apache.org/documentation/#impl_writes) which always go to the last file. This file is rolled over to a fresh file when it reaches a
+configurable size (say 1GB). The log takes two configuration parameters: M, which gives the number of messages to write
+before forcing the OS to flush the file to disk, and S, which gives a number of seconds after which a flush is forced.
+This gives a durability guarantee of losing at most M messages or S seconds of data in the event of a system crash.
+
+## Reads
+Reads are done by giving the 64-bit logical offset of a message and an S-byte max chunk size. This will return an iterator
+over the messages contained in the S-byte buffer. S is intended to be larger than any single message, but in the event of an
+abnormally large message, the read can be retried multiple times, each time doubling the buffer size, until the message is read
+successfully. A maximum message and buffer size can be specified to make the server reject messages larger than some size,
+and to give a bound to the client on the maximum it needs to ever read to get a complete message. It is likely that the read buffer
+ends with a partial message, this is easily detected by the size delimiting.
+
+The actual process of reading from an offset requires first locating the log segment file in which the data is stored,
+calculating the file-specific offset from the global offset value, and then reading from that file offset. The search is done
+as a simple binary search variation against an in-memory range maintained for each file.
+
+The log provides the capability of getting the most recently written message to allow clients to start subscribing as of
+"right now". This is also useful in the case the consumer fails to consume its data within its SLA-specified number of
+days. In this case when the client attempts to consume a non-existent offset it is given an OutOfRangeException and can either
+reset itself or fail as appropriate to the use case.
+
+## Deletes
+Data is deleted one log segment at a time. The log manager allows pluggable delete policies to choose which files are eligible
+for deletion. The current policy deletes any log with a modification time of more than N days ago, though a policy which retained
+the last N GB could also be useful. To avoid locking reads while still allowing deletes that modify the segment list we use a
+copy-on-write style segment list implementation that provides consistent views to allow a binary search to proceed on an
+immutable static snapshot view of the log segments while deletes are progressing.
+
+## Schema Registry
+The [Schema Registry](https://github.com/confluentinc/schema-registry) is an open source product that provides a serving layer
+for your metadata. It provides a RESTful interface for storing and retrieving Avro schemas. It stores a versioned history of all
+schemas, provides multiple compatibility settings and allows evolution of schemas according to the configured compatibility setting.
+It provides __serializers that plug into Kafka clients__ that handle schema storage and retrieval for Kafka messages
+that are sent in the Avro format.
+
+This way the Schema Registry enables safe, zero downtime evolution of schemas by centralizing the management of schemas
+written for the Avro serialization system. It tracks all versions of schemas used for every topic in Kafka and only allows
+evolution of schemas according to user-defined compatibility settings. This gives developers confidence that they can safely
+modify schemas as necessary without worrying that doing so will break a different service they may not even be aware of.
+
+The Schema Registry also includes plugins for Kafka clients that handle schema storage and retrieval for Kafka messages
+that are sent in the Avro format. This integration is seamless, if you are already using Kafka with Avro data, using
+the Schema Registry only requires including the serializers with your application and changing one setting.
+
+## Running the Schema Registry
+The Schema Registry is dependent on Zookeeper and Kafka and therefor both of them must be running. The schema registry is
+part of the confluent platform and can be launched with the following command:
+
+```
+cd $CONFLUENT_PLATFORM_HOME
+./bin/schema-registry-start ./etc/schema-registry/schema-registry.properties
+```
+
+The schema registry needs the following configuration:
+
+```
+listeners=http://0.0.0.0:8081
+kafkastore.connection.url=localhost:2181
+kafkastore.topic=_schemas
+debug=false
+```
+
+## Schema Registry REST interface
+The schema registry has a REST interface and can be accessed eg. by the [httpie](https://httpie.org/) CLI client
+and is available at port 8081.
+
 ## Kafka Streams
 [Kafka Streams](http://docs.confluent.io/3.1.2/streams/architecture.html#streams-architecture) simplifies application development
 by building on the Kafka producer and consumer libraries and leveraging the native capabilities of Kafka to offer data parallelism,

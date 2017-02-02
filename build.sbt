@@ -8,8 +8,9 @@ scalaVersion in ThisBuild := "2.11.8"
 
 val akkaVersion = "2.4.16"
 
-libraryDependencies += "org.scalaz" %% "scalaz-core" % "7.2.8"
-libraryDependencies += "com.github.mpilquist" %% "simulacrum" % "0.10.0"
+//libraryDependencies += "org.scalaz" %% "scalaz-core" % "7.2.8"
+//libraryDependencies += "org.typelevel" %% "cats" % "0.9.0"
+//libraryDependencies += "com.github.mpilquist" %% "simulacrum" % "0.10.0"
 libraryDependencies += "com.softwaremill.macwire" %% "macros" % "2.2.5" % "provided"
 
 libraryDependencies += lagomScaladslApi
@@ -46,8 +47,18 @@ lagomCassandraCleanOnStart := true
 lazy val personMapper =
   (project in file("person-mapper")).settings(
     scalaVersion := "2.12.1",
-    libraryDependencies += "org.scalaz" %% "scalaz-core" % "7.2.8",
     libraryDependencies += "com.typesafe.akka" %% "akka-http-spray-json" % "10.0.3",
     libraryDependencies += "org.apache.kafka" % "kafka-streams" % "0.10.0.1" exclude("org.slf4j","slf4j-log4j12") exclude("javax.jms", "jms") exclude("com.sun.jdmk", "jmxtools") exclude("com.sun.jmx", "jmxri"),
+    libraryDependencies += "com.typesafe.akka" %% "akka-stream-kafka" % "0.13"
+  ).enablePlugins(AutomateHeaderPlugin)
+
+lazy val nativeClientTest = (project in file("native-client-test"))
+  .settings(
+    scalaVersion := "2.12.1",
+    resolvers += "Confluent Maven Repo" at "http://packages.confluent.io/maven/",
+    // https://github.com/sksamuel/avro4s
+    libraryDependencies += "com.sksamuel.avro4s" %% "avro4s-core" % "1.6.4",
+    libraryDependencies += "io.confluent" % "kafka-avro-serializer" % "3.1.2",
+    libraryDependencies += "org.apache.kafka" % "kafka-streams" % "0.10.1.1-cp1",
     libraryDependencies += "com.typesafe.akka" %% "akka-stream-kafka" % "0.13"
   ).enablePlugins(AutomateHeaderPlugin)
