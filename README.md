@@ -360,6 +360,64 @@ debug=false
 The schema registry has a REST interface and can be accessed eg. by the [httpie](https://httpie.org/) CLI client
 and is available at port 8081.
 
+## Kafka REST Proxy
+The Kafka REST Proxy provides a RESTful interface to a Kafka cluster. It makes it easy to produce and consume messages,
+view the state of the cluster, and perform administrative actions without using the native Kafka protocol or clients.
+Examples of use cases include reporting data to Kafka from any frontend app built in any language, ingesting messages into
+a stream processing framework that doesn’t yet support Kafka, and scripting administrative actions.
+
+The REST Proxy depends on: ZooKeeper, Kafka, and the Schema Registry so they all need to run.
+
+The REST Proxy can be launched with the following command:
+
+```
+cd $CONFLUENT_PLATFORM_HOME
+./bin/kafka-rest-start ./etc/kafka-rest/kafka-rest.properties
+```
+
+The REST Proxy needs the following configuration:
+
+```
+#id=kafka-rest-test-server
+#schema.registry.url=http://localhost:8081
+#zookeeper.connect=localhost:2181
+```
+
+The REST proxy is available at port `8082`.
+
+### Listing topics
+To list the available topics, execute the following command using [httpie]():
+
+```
+$ http :8082/topics
+HTTP/1.1 200 OK
+Content-Length: 153
+Content-Type: application/vnd.kafka.v1+json
+Date: Fri, 03 Feb 2017 19:49:26 GMT
+Server: Jetty(9.2.12.v20150709)
+
+[
+    "test"
+]
+```
+
+## List of brokers
+
+```
+$ http :8082/brokers
+HTTP/1.1 200 OK
+Content-Length: 15
+Content-Type: application/vnd.kafka.v1+json
+Date: Fri, 03 Feb 2017 19:57:15 GMT
+Server: Jetty(9.2.12.v20150709)
+
+{
+    "brokers": [
+        0
+    ]
+}
+```
+
 ## Kafka Consumer
 ....
 
@@ -416,7 +474,7 @@ extending the `TimestampExtractor`class and then configuring the `StreamsConfig.
 [Kafka Streams](http://docs.confluent.io/3.1.2/streams/architecture.html#streams-architecture) simplifies application development
 by building on the Kafka producer and consumer libraries and leveraging the native capabilities of Kafka to offer data parallelism,
 distributed coordination, fault tolerance, and operational simplicity.
-
+    
 ## KStream
 A [KStream](http://docs.confluent.io/3.1.2/streams/concepts.html#kstream-record-stream) is an abstraction of a record stream,
 where each data record represents a self-contained datum in the unbounded data set.
@@ -498,3 +556,7 @@ compute based on them.
 - [(0'37 hr) Introducing Kafka Streams, the new stream processing library - Michael Noll](https://www.youtube.com/watch?v=o7zSLNiTZbA)
 - [(0'35 hr) Building a Real-time Streaming Platform Using Kafka Streams - Jay Kreps](https://www.youtube.com/watch?v=zVK12q9PpQg)
 - [(0'56 hr) Streaming operational data with Kafka – Couchbase](https://www.youtube.com/watch?v=L0SfRfKBRGA)
+
+
+## Resources
+- [Distributed, Real-time Joins and Aggregations on User Activity Events using Kafka Streams - Michael Noll](https://www.confluent.io/blog/distributed-real-time-joins-and-aggregations-on-user-activity-events-using-kafka-streams/)

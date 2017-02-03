@@ -1,0 +1,5 @@
+
+GET         /api-docs              controllers.ApiHelpController.getResources
+GET         /api-docs/*path        controllers.ApiHelpController.getResource(path: String)
+  
+POST        /api/persons           com.github.dnvriend.person.PersonController.createPerson

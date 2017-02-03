@@ -62,3 +62,7 @@ lazy val nativeClientTest = (project in file("native-client-test"))
     libraryDependencies += "org.apache.kafka" % "kafka-streams" % "0.10.1.1-cp1",
     libraryDependencies += "com.typesafe.akka" %% "akka-stream-kafka" % "0.13"
   ).enablePlugins(AutomateHeaderPlugin)
+
+lazy val playProducer =
+  (project in file("play-producer"))
+  .enablePlugins(PlayScala)
