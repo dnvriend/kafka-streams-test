@@ -55,7 +55,7 @@ class PersonController @Inject() (producer: KafkaProducer, cb: CircuitBreaker)(i
       person <- Future.fromTry(entityAs[CreatePerson])
       id = randomId
       cmd = CreatePersonCmd(id, person.name, person.age)
-      _ <- producer.produceJson("test", id, cmd) >> producer.produceAvro("test2", id, cmd)
+      _ <- producer.produceJson("test", id, cmd) *> producer.produceAvro("test2", id, cmd)
     } yield Ok(Json.toJson(cmd))
 
     cb.withCircuitBreaker(result)
