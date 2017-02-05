@@ -21,15 +21,15 @@ import javax.inject.Inject
 
 import akka.pattern.CircuitBreaker
 import com.sksamuel.avro4s.{ AvroSchema, RecordFormat }
-import play.api.mvc.{ Action, AnyContent, Controller, Request }
 import org.slf4j.{ Logger, LoggerFactory }
 import play.api.libs.json.{ Format, Json }
+import play.api.mvc.{ Action, AnyContent, Controller, Request }
 import play.modules.kafka.KafkaProducer
 
 import scala.concurrent.{ ExecutionContext, Future }
 import scala.util.Try
+import scalaz.Scalaz._
 import scalaz._
-import Scalaz._
 
 final case class CreatePerson(name: String, age: Int)
 object CreatePerson {
