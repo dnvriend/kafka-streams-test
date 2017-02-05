@@ -20,34 +20,42 @@ import java.util.UUID
 import javax.inject.Inject
 
 import akka.pattern.CircuitBreaker
-import play.api.mvc.{ Action, Controller }
+import com.sksamuel.avro4s.{ AvroSchema, RecordFormat }
+import play.api.mvc.{ Action, AnyContent, Controller, Request }
 import org.slf4j.{ Logger, LoggerFactory }
-import play.api.libs.json.Json
+import play.api.libs.json.{ Format, Json }
 import play.modules.kafka.KafkaProducer
 
 import scala.concurrent.{ ExecutionContext, Future }
 import scala.util.Try
+import scalaz._
+import Scalaz._
 
 final case class CreatePerson(name: String, age: Int)
 object CreatePerson {
   implicit val format = Json.format[CreatePerson]
 }
 
-final case class CreatePersonCmd(id: String, name: String, age: Int)
+final case class CreatePersonCmd(id: String, name: String, age: Int, married: Option[Boolean] = None, children: Int = 0)
 case object CreatePersonCmd {
   implicit val format = Json.format[CreatePersonCmd]
+  implicit val recordFormat = RecordFormat[CreatePersonCmd]
+  implicit val schema = AvroSchema[CreatePersonCmd]
 }
 
 class PersonController @Inject() (producer: KafkaProducer, cb: CircuitBreaker)(implicit ec: ExecutionContext) extends Controller {
   val log: Logger = LoggerFactory.getLogger(this.getClass)
   def randomId: String = UUID.randomUUID.toString
 
-  def createPerson = Action.async { req =>
+  def entityAs[A: Format](implicit req: Request[AnyContent]): Try[A] =
+    Try(req.body.asJson.map(_.as[A]).get)
+
+  def createPerson = Action.async { implicit req =>
     val result = for {
-      person <- Future.fromTry(Try(req.body.asJson.map(_.as[CreatePerson]).get))
+      person <- Future.fromTry(entityAs[CreatePerson])
       id = randomId
       cmd = CreatePersonCmd(id, person.name, person.age)
-      _ <- producer.produce("test", id, cmd)
+      _ <- producer.produceJson("test", id, cmd) >> producer.produceAvro("test2", id, cmd)
     } yield Ok(Json.toJson(cmd))
 
     cb.withCircuitBreaker(result)

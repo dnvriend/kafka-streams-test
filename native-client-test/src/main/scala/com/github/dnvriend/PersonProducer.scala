@@ -25,7 +25,7 @@ object PersonProducer extends App {
   def sendRecord(xs: List[String]): Future[_] = Future {
     blocking {
       val avroRecord: GenericRecord = format.to(Person(uuid, name(names), Random.nextInt(100), Option(false)))
-      val record = new ProducerRecord(Topic.PersonCreated, key, avroRecord)
+      val record: ProducerRecord[String, GenericRecord] = new ProducerRecord(Topic.PersonCreated, key, avroRecord)
       producer.send(record).get
     }
   }

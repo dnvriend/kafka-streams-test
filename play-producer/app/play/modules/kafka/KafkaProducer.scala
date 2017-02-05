@@ -24,23 +24,35 @@ import akka.kafka.ProducerSettings
 import akka.kafka.scaladsl.Producer
 import akka.pattern.CircuitBreaker
 import akka.stream.Materializer
-import akka.stream.scaladsl.Source
+import akka.stream.scaladsl.{ Sink, Source }
+import com.sksamuel.avro4s.RecordFormat
 import org.apache.kafka.clients.producer.ProducerRecord
-import org.apache.kafka.common.serialization.StringSerializer
+import org.apache.kafka.common.serialization.{ Serializer, StringSerializer }
 import play.api.libs.json.{ Format, Json }
 
 import scala.concurrent.{ ExecutionContext, Future }
 
 @Singleton
 class KafkaProducer @Inject() (cb: CircuitBreaker)(implicit system: ActorSystem, mat: Materializer, ec: ExecutionContext) {
-  val producerSettings: ProducerSettings[String, String] =
-    ProducerSettings(system, new StringSerializer, new StringSerializer)
+  def producerSettings[K, V](keySerializer: Option[Serializer[K]], valueSerializer: Option[Serializer[V]]): ProducerSettings[K, V] =
+    ProducerSettings(system, keySerializer, valueSerializer)
       .withBootstrapServers("localhost:9092")
+      .withProperty("schema.registry.url", "http://localhost:8081")
 
-  def produce(producerRecord: ProducerRecord[String, String]): Future[Done] =
-    cb.withCircuitBreaker(Source.single(producerRecord).runWith(Producer.plainSink(producerSettings)))
+  val stringSerializerSink: Sink[ProducerRecord[String, String], Future[Done]] =
+    Producer.plainSink(producerSettings(Option(new StringSerializer), Option(new StringSerializer)))
 
-  def produce[A: Format](topic: String, key: String, value: A): Future[Done] = {
-    produce(new ProducerRecord[String, String](topic, key, Json.toJson(value).toString))
+  val avroSerializerSink: Sink[ProducerRecord[String, AnyRef], Future[Done]] =
+    Producer.plainSink(producerSettings(None, None))
+
+  def produce[K, V](producerRecord: ProducerRecord[K, V], sink: Sink[ProducerRecord[K, V], Future[Done]]): Future[Done] =
+    cb.withCircuitBreaker(Source.single(producerRecord).runWith(sink))
+
+  def produceJson[A: Format](topic: String, key: String, value: A): Future[Done] = {
+    produce(new ProducerRecord[String, String](topic, key, Json.toJson(value).toString), stringSerializerSink)
+  }
+
+  def produceAvro[A](topic: String, key: String, value: A)(implicit recordFormat: RecordFormat[A]) = {
+    produce(new ProducerRecord[String, AnyRef](topic, key, recordFormat.to(value)), avroSerializerSink)
   }
 }

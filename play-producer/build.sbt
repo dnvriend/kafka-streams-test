@@ -11,7 +11,12 @@ val akkaVersion = "2.4.16"
 // fp
 libraryDependencies += "org.scalaz" %% "scalaz-core" % "7.2.8"
 libraryDependencies += "com.github.mpilquist" %% "simulacrum" % "0.10.0"
+
+// kafka
 libraryDependencies += "com.typesafe.akka" %% "akka-stream-kafka" % "0.13"
+libraryDependencies += "io.confluent" % "kafka-avro-serializer" % "3.1.2"
+libraryDependencies += "org.apache.kafka" % "kafka-streams" % "0.10.1.1-cp1"
+libraryDependencies += "com.sksamuel.avro4s" %% "avro4s-core" % "1.6.4"
 
 // ws
 libraryDependencies += ws
