@@ -30,10 +30,12 @@ object KafkaConfig {
     // key deserializer
     StreamsConfig.KEY_SERDE_CLASS_CONFIG -> Serdes.String.getClass.getName,
     // value deserializer
-    StreamsConfig.VALUE_SERDE_CLASS_CONFIG -> Serdes.String.getClass.getName,
+    StreamsConfig.VALUE_SERDE_CLASS_CONFIG -> classOf[GenericAvroSerde].getName,
 
-    ConsumerConfig.GROUP_ID_CONFIG -> UUID.randomUUID.toString,
-    ConsumerConfig.AUTO_OFFSET_RESET_CONFIG -> "earliest"
+    //    ConsumerConfig.GROUP_ID_CONFIG -> UUID.randomUUID.toString,
+    ConsumerConfig.GROUP_ID_CONFIG -> "group-foo",
+    ConsumerConfig.AUTO_OFFSET_RESET_CONFIG -> "earliest",
+    "schema.registry.url" -> "http://localhost:8081"
   )
 
   def config(applicationId: String): Properties = {
