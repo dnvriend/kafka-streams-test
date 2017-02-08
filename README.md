@@ -541,6 +541,26 @@ and producing outputs. For example, in join and aggregation operations, a window
 records received so far within the defined window boundary. The operators can then access accumulated records in the store and
 compute based on them.
 
+## Kafka-Connect
+Where Kafka-streams is focused on the Transformation part of eg. an ETL pipeline, Kafka connect takes the Extract and Load
+part so the EL. Kafka Connect has been split into two parts, one part that does the 'extracting data from a system to Kafka' eg.
+from a file, database, HDFS or even another Kafka, which is called the `source` and another part that takes the loading of data
+from Kafka to a file, database, HDFS which is called the `sink`.
+
+Kafka-connect comes bundled with the following connectors:
+
+- [File Connector](http://docs.confluent.io/3.1.2/connect/connect-filestream/filestream_connector.html)
+- [JDBC Connector](http://docs.confluent.io/3.1.2/connect/connect-jdbc/docs/index.html)
+- [Elasticsearch Connector](http://docs.confluent.io/3.1.2/connect/connect-elasticsearch/docs/index.html)
+- [HDFS Connector](http://docs.confluent.io/3.1.2/connect/connect-hdfs/docs/index.html)
+- [Kafka Replicator Connector](http://docs.confluent.io/3.1.2/connect/connect-replicator/docs/index.html)
+
+## Stream processing
+Stream processing enables continuous, real-time processing and transformation of these streams and makes
+the results available system-wide
+
+
+
 ## Youtube
 - [(0'29 hr) Apache Kafka and the Next 700 Stream Processing Systems - Jay Kreps](https://www.youtube.com/watch?v=9RMOc0SwRro)
 - [(1'04 hr) I ♥ Logs: Apache Kafka and Real-Time Data Integration - Jay Kreps](https://www.youtube.com/watch?v=aJuo_bLSW6s)
@@ -557,6 +577,7 @@ compute based on them.
 - [(0'35 hr) Building a Real-time Streaming Platform Using Kafka Streams - Jay Kreps](https://www.youtube.com/watch?v=zVK12q9PpQg)
 - [(0'56 hr) Streaming operational data with Kafka – Couchbase](https://www.youtube.com/watch?v=L0SfRfKBRGA)
 
-
 ## Resources
 - [Distributed, Real-time Joins and Aggregations on User Activity Events using Kafka Streams - Michael Noll](https://www.confluent.io/blog/distributed-real-time-joins-and-aggregations-on-user-activity-events-using-kafka-streams/)
+- [Putting Apache Kafka to use: A practical guide to building a stream data platform - part 1/2 - Jay Kreps](https://www.confluent.io/blog/stream-data-platform-1/)
+- [Putting Apache Kafka to use: A practical guide to building a stream data platform - part 2/2 - Jay Kreps](https://www.confluent.io/blog/stream-data-platform-2/)

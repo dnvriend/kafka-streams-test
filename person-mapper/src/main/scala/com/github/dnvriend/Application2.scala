@@ -14,7 +14,7 @@ object Application2 extends App {
 
   // read the mappedPersonCreated
   val foreachBuilder: KStreamBuilder = new KStreamBuilder
-  foreachBuilder.stream[Array[Byte], String]("MappedPersonCreated")
+  foreachBuilder.stream[String, String]("MappedPersonCreated")
     .foreach { (key, value) =>
       count += 1
       println(s"==> [Application2 - $count] ==> key='$key', value='$value'")

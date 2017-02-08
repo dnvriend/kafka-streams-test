@@ -12,12 +12,12 @@ import scala.io.Source
 import scala.language.implicitConversions
 import scala.util.Random
 
-final case class PersonCreated(id: String, name: String, age: Int, time: Long)
+final case class PersonCreated(id: String, name: String, age: Int, married: Option[Boolean] = None, children: Int = 0)
 
 // see: http://deron.meranda.us/data/
 // see: http://docs.confluent.io/3.1.2/streams/developer-guide.html#streams-developer-guide-dsl
 object Application extends App with DefaultJsonProtocol {
-  implicit val format = jsonFormat4(PersonCreated)
+  implicit val format = jsonFormat5(PersonCreated)
 
   def getData(resource: String): List[String] =
     Source.fromInputStream(this.getClass.getResourceAsStream(resource))
@@ -37,7 +37,8 @@ object Application extends App with DefaultJsonProtocol {
   val builder: KStreamBuilder = new KStreamBuilder
   // read the input to a KStream instance
   builder
-    .stream[Array[Byte], String]("PersonCreated")
+    .stream[String, String]("PersonCreatedJson")
+    .mapValues[String] { e => println(e); e }
     .mapValues[PersonCreated](_.parseJson.convertTo[PersonCreated])
     .mapValues(event => (event, event.copy(name = s"${random(names)} ${random(lastNames)}")))
     .mapValues[String] {

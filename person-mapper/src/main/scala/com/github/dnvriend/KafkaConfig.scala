@@ -1,7 +1,8 @@
 package com.github.dnvriend
 
-import java.util.Properties
+import java.util.{ Properties, UUID }
 
+import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.StreamsConfig
 
@@ -27,9 +28,12 @@ object KafkaConfig {
     // Zookeeper connect string for Kafka topic management
     StreamsConfig.ZOOKEEPER_CONNECT_CONFIG -> "localhost:2181",
     // key deserializer
-    StreamsConfig.KEY_SERDE_CLASS_CONFIG -> Serdes.ByteArray.getClass.getName,
+    StreamsConfig.KEY_SERDE_CLASS_CONFIG -> Serdes.String.getClass.getName,
     // value deserializer
-    StreamsConfig.VALUE_SERDE_CLASS_CONFIG -> Serdes.String.getClass.getName
+    StreamsConfig.VALUE_SERDE_CLASS_CONFIG -> Serdes.String.getClass.getName,
+
+    ConsumerConfig.GROUP_ID_CONFIG -> UUID.randomUUID.toString,
+    ConsumerConfig.AUTO_OFFSET_RESET_CONFIG -> "earliest"
   )
 
   def config(applicationId: String): Properties = {
