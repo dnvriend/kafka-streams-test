@@ -1,13 +1,12 @@
 package com.github.dnvriend
 
-import java.util.{ Properties, UUID }
+import java.util.Properties
 
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.serde.avro.GenericAvroSerde
 
-// see: http://docs.confluent.io/3.1.2/streams/developer-guide.html#overview
 object KafkaConfig {
   def configAsMap(applicationId: String): Map[String, String] = Map(
     // An identifier for the stream processing application. Must be unique within the Kafka cluster.
@@ -33,7 +32,6 @@ object KafkaConfig {
     // value deserializer
     StreamsConfig.VALUE_SERDE_CLASS_CONFIG -> classOf[GenericAvroSerde].getName,
 
-    //    ConsumerConfig.GROUP_ID_CONFIG -> UUID.randomUUID.toString,
     ConsumerConfig.GROUP_ID_CONFIG -> "group-foo",
     ConsumerConfig.AUTO_OFFSET_RESET_CONFIG -> "earliest",
     "schema.registry.url" -> "http://localhost:8081"
