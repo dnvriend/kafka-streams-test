@@ -6,8 +6,7 @@ package com.github.dnvriend
 
 import com.sksamuel.avro4s.RecordFormat
 import org.apache.avro.generic.GenericRecord
-import org.apache.kafka.streams._
-import org.apache.kafka.streams.kstream.KStreamBuilder
+import org.apache.kafka.streams.kstream.internals.ScalaKStreamBuilder
 
 import scala.language.implicitConversions
 
@@ -21,13 +20,11 @@ object PersonForeachMapper extends App {
 
   var count = 0L
 
-  // read the mappedPersonCreated
-  val foreachBuilder: KStreamBuilder = new KStreamBuilder
-  foreachBuilder.stream[String, GenericRecord]("MappedPersonCreatedAvro")
-    .mapValues[PersonCreated](record => recordAs[PersonCreated](record))
+  ScalaKStreamBuilder(KafkaConfig.config("person-foreach-mapper"))
+    .stream[String, GenericRecord]("MappedPersonCreatedAvro")
+    .parseFromAvro[PersonCreated]
     .foreach { (key, value) =>
       count += 1
       println(s"==> [PersonForeachMapper - $count] ==> key='$key', value='$value'")
-    }
-  new KafkaStreams(foreachBuilder, KafkaConfig.config("personcreated-logger")).start()
+    }.start()
 }

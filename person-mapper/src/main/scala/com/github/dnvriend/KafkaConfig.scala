@@ -5,6 +5,7 @@ import java.util.{ Properties, UUID }
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.StreamsConfig
+import org.apache.kafka.streams.serde.avro.GenericAvroSerde
 
 // see: http://docs.confluent.io/3.1.2/streams/developer-guide.html#overview
 object KafkaConfig {

@@ -6,8 +6,7 @@ package com.github.dnvriend
 
 import com.sksamuel.avro4s.RecordFormat
 import org.apache.avro.generic.GenericRecord
-import org.apache.kafka.streams._
-import org.apache.kafka.streams.kstream.KStreamBuilder
+import org.apache.kafka.streams.kstream.internals.ScalaKStreamBuilder
 
 import scala.io.Source
 import scala.util.Random
@@ -17,9 +16,6 @@ object PersonMapper extends App {
   object PersonCreated {
     implicit val recordFormat = RecordFormat[PersonCreated]
   }
-
-  def recordAs[A](record: GenericRecord)(implicit format: RecordFormat[A]): A = format.from(record)
-  def valueToRecord[A](value: A)(implicit format: RecordFormat[A]): GenericRecord = format.to(value)
 
   def getData(resource: String): List[String] =
     Source.fromInputStream(this.getClass.getResourceAsStream(resource))
@@ -34,16 +30,14 @@ object PersonMapper extends App {
 
   def random(xs: List[String]): String = xs.drop(Random.nextInt(xs.length)).headOption.getOrElse("No entry")
 
-  var count = 0L
-
-  val builder: KStreamBuilder = new KStreamBuilder
-
-  builder
+  ScalaKStreamBuilder(KafkaConfig.config("person-mapper"))
     .stream[String, GenericRecord]("PersonCreatedAvro")
-    .mapValues[PersonCreated](record => recordAs[PersonCreated](record))
-    .mapValues(event => event.copy(name = s"${random(names)} ${random(lastNames)}"))
-    .mapValues[GenericRecord](value => valueToRecord(value))
-    .to("MappedPersonCreatedAvro")
-
-  new KafkaStreams(builder, KafkaConfig.config("person-mapper")).start()
+    .parseFromAvro[PersonCreated]
+    .map { event =>
+      println("Mapping and producing: " + event)
+      event.copy(name = s"${random(names)} ${random(lastNames)}")
+    }
+    .mapToAvro
+    .toTopic("MappedPersonCreatedAvro")
+    .start()
 }
