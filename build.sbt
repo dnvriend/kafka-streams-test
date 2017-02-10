@@ -41,13 +41,15 @@ enablePlugins(AutomateHeaderPlugin)
 lagomKafkaCleanOnStart := true
 lagomCassandraCleanOnStart := true
 
-lazy val personMapper =
-  (project in file("person-mapper")).settings(
+lazy val kafkaStreams =
+  (project in file("kafka-streams")).settings(
+    resolvers += "Confluent Maven Repo" at "http://packages.confluent.io/maven/",
     scalaVersion := "2.11.8",
     libraryDependencies += "com.typesafe.akka" %% "akka-http-spray-json" % "10.0.3",
     libraryDependencies += "org.apache.kafka" % "kafka-streams" % "0.10.1.1-cp1",
     libraryDependencies += "com.typesafe.akka" %% "akka-stream-kafka" % "0.13",
     libraryDependencies += "io.confluent" % "kafka-avro-serializer" % "3.1.2",
+    libraryDependencies += "io.confluent" % "monitoring-interceptors" % "3.1.2",
     libraryDependencies += "com.sksamuel.avro4s" %% "avro4s-core" % "1.6.4",
     libraryDependencies += "com.typesafe.play" %% "play-ws" % "2.5.12",
     libraryDependencies += "com.typesafe.play" %% "play-json" % "2.5.12",

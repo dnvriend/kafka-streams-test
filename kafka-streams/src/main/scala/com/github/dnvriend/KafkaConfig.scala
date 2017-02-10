@@ -34,7 +34,9 @@ object KafkaConfig {
 
     ConsumerConfig.GROUP_ID_CONFIG -> "group-foo",
     ConsumerConfig.AUTO_OFFSET_RESET_CONFIG -> "earliest",
-    "schema.registry.url" -> "http://localhost:8081"
+    "schema.registry.url" -> "http://localhost:8081",
+    "producer.interceptor.classes" -> "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor",
+    "consumer.interceptor.classes" -> "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor"
   )
 
   def config(applicationId: String): Properties = {
