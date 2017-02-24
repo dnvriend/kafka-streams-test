@@ -582,3 +582,5 @@ the results available system-wide.
 - [Distributed, Real-time Joins and Aggregations on User Activity Events using Kafka Streams - Michael Noll](https://www.confluent.io/blog/distributed-real-time-joins-and-aggregations-on-user-activity-events-using-kafka-streams/)
 - [Putting Apache Kafka to use: A practical guide to building a stream data platform - part 1/2 - Jay Kreps](https://www.confluent.io/blog/stream-data-platform-1/)
 - [Putting Apache Kafka to use: A practical guide to building a stream data platform - part 2/2 - Jay Kreps](https://www.confluent.io/blog/stream-data-platform-2/)
+- [Kafka 0.10.2.0 release notes](https://archive.apache.org/dist/kafka/0.10.2.0/RELEASE_NOTES.html)
+- [Kafka Streams User Manual](http://docs.confluent.io/3.1.2/streams/index.html)
