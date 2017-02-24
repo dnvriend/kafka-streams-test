@@ -17,14 +17,14 @@
 package com.github.dnvriend
 
 import java.nio.file.Paths
-import java.nio.file.StandardOpenOption.{APPEND, CREATE, WRITE}
+import java.nio.file.StandardOpenOption.{ APPEND, CREATE, WRITE }
 import java.util.UUID
 
 import akka.actor.ActorSystem
-import akka.stream.{ActorMaterializer, IOResult, Materializer}
-import akka.stream.scaladsl.{FileIO, Source}
+import akka.stream.{ ActorMaterializer, IOResult, Materializer }
+import akka.stream.scaladsl.{ FileIO, Source }
 import akka.util.ByteString
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 object GoogleRequestCreator extends App {
   implicit val system: ActorSystem = ActorSystem()

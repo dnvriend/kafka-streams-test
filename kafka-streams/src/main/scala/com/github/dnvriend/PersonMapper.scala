@@ -31,7 +31,7 @@ object PersonMapper extends App {
   def random(xs: List[String]): String = xs.drop(Random.nextInt(xs.length)).headOption.getOrElse("No entry")
 
   ScalaKStreamBuilder(KafkaConfig.config("person-mapper"))
-    .stream[String, GenericRecord]("PersonCreatedAvro")
+    .streamScalaDsl[String, GenericRecord]("PersonCreatedAvro")
     .parseFromAvro[PersonCreated]
     .map { event =>
       println("Mapping and producing: " + event)

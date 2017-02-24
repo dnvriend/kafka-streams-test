@@ -21,7 +21,7 @@ object PersonForeachMapper extends App {
   var count = 0L
 
   ScalaKStreamBuilder(KafkaConfig.config("person-foreach-mapper"))
-    .stream[String, GenericRecord]("MappedPersonCreatedAvro")
+    .streamScalaDsl[String, GenericRecord]("MappedPersonCreatedAvro")
     .parseFromAvro[PersonCreated]
     .foreach { (key, value) =>
       count += 1

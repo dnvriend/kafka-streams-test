@@ -17,13 +17,10 @@ import scala.compat.Platform
 import scala.concurrent.Future
 import scala.util.Random
 
-object PersonProducer extends App {
-
-  final case class PersonCreated(id: String, name: String, age: Long, married: Option[Boolean] = None, children: Int = 0)
-
-  object PersonCreated {
-    implicit val jsonFormat = Json.format[PersonCreated]
-    implicit val recordFormat = RecordFormat[PersonCreated]
+object UpdateProducer extends App {
+  final case class Update(name: String, count: Int)
+  object Update {
+    implicit val recordFormat = RecordFormat[Update]
   }
 
   implicit val system = ActorSystem()
@@ -45,15 +42,8 @@ object PersonProducer extends App {
 
   val done =
     Source.repeat(1)
-      .take(10000)
-      .zipWithIndex
-      .map {
-        case (_, index) =>
-          if (index % 10000 == 0) println("processed: " + index)
-          val id = randomId
-          PersonCreated(id, "foo", index, Option(index).filter(_ % 5 == 0).map(_ % 3 == 0), Random.nextInt(2))
-      }
-      .map(value => record("PersonCreatedAvro", value.id, value))
+      .take(10)
+      .map(value => record("Updatess", "foo", Update("foo", 1)))
       .runWith(sink)
 
   val start = Platform.currentTime

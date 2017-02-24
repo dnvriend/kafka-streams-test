@@ -1,12 +1,12 @@
 name := "kafka-streams-test"
 
-organization in ThisBuild := "com.github.dnvriend"
-
-version := "1.0.0"
+version in ThisBuild := "1.0.0"
 
 scalaVersion in ThisBuild := "2.11.8"
 
-val akkaVersion = "2.4.16"
+organization in ThisBuild := "com.github.dnvriend"
+
+val akkaVersion = "2.4.17"
 
 libraryDependencies += "com.softwaremill.macwire" %% "macros" % "2.2.5" % "provided"
 
@@ -14,9 +14,11 @@ libraryDependencies += lagomScaladslApi
 libraryDependencies += lagomScaladslPersistenceCassandra
 libraryDependencies += lagomScaladslKafkaBroker
 
-fork in Test := true
+fork in Test in ThisBuild := true
 
-parallelExecution := false
+parallelExecution in ThisBuild := false
+
+resolvers in ThisBuild += "Confluent Maven Repo" at "http://packages.confluent.io/maven/"
 
 import scalariform.formatter.preferences._
 import com.typesafe.sbt.SbtScalariform
@@ -43,7 +45,6 @@ lagomCassandraCleanOnStart := true
 
 lazy val kafkaStreams =
   (project in file("kafka-streams")).settings(
-    resolvers += "Confluent Maven Repo" at "http://packages.confluent.io/maven/",
     scalaVersion := "2.11.8",
     libraryDependencies += "com.typesafe.akka" %% "akka-http-spray-json" % "10.0.3",
     libraryDependencies += "org.apache.kafka" % "kafka-streams" % "0.10.1.1-cp1",
@@ -59,7 +60,6 @@ lazy val kafkaStreams =
 lazy val nativeClientTest = (project in file("native-client-test"))
   .settings(
     scalaVersion := "2.12.1",
-    resolvers += "Confluent Maven Repo" at "http://packages.confluent.io/maven/",
     // https://github.com/sksamuel/avro4s
     libraryDependencies += "com.sksamuel.avro4s" %% "avro4s-core" % "1.6.4",
     libraryDependencies += "io.confluent" % "kafka-avro-serializer" % "3.1.2",

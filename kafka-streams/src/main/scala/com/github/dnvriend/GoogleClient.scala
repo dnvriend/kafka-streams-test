@@ -43,7 +43,7 @@ object GoogleClient extends App {
   def randomId: String = UUID.randomUUID().toString
 
   ScalaKStreamBuilder(KafkaConfig.config("google-results-" + randomId))
-    .stream[String, GenericRecord]("PersonCreatedAvro")
+    .streamScalaDsl[String, GenericRecord]("PersonCreatedAvro")
     .parseFromAvro[PersonCreated]
     .mapAsync(_ => callGoogle(ws))
     .mapToAvro

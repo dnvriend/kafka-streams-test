@@ -557,11 +557,12 @@ Kafka-connect comes bundled with the following connectors:
 
 ## Stream processing
 Stream processing enables continuous, real-time processing and transformation of these streams and makes
-the results available system-wide
-
-
+the results available system-wide.
 
 ## Youtube
+- [(0'04 hr) Kafka Streams Overview - Confluent.io](https://www.youtube.com/watch?v=V3m6ikfMxOQ)
+- [(0'39 hr) ETL Is Dead, Long Live Streams: real-time streams w/ Apache Kafka - Neha Narkhede](https://www.youtube.com/watch?v=I32hmY4diFY)
+- [(0'45 hr) Applications in the Emerging World of Stream Processing • Neha Narkhede](https://www.youtube.com/watch?v=WuBQBTET8Qg)
 - [(0'29 hr) Apache Kafka and the Next 700 Stream Processing Systems - Jay Kreps](https://www.youtube.com/watch?v=9RMOc0SwRro)
 - [(1'04 hr) I ♥ Logs: Apache Kafka and Real-Time Data Integration - Jay Kreps](https://www.youtube.com/watch?v=aJuo_bLSW6s)
 - [(1'01 hr) Deep dive into Apache Kafka](https://www.youtube.com/watch?v=hplobfWsY2E)

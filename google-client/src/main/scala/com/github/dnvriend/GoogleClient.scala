@@ -20,15 +20,15 @@ import java.util.UUID
 
 import akka.Done
 import akka.actor.ActorSystem
-import akka.kafka.scaladsl.{Consumer, Producer}
-import akka.kafka.{ConsumerSettings, ProducerMessage, ProducerSettings, Subscriptions}
-import akka.stream.{ActorMaterializer, Materializer}
+import akka.kafka.scaladsl.{ Consumer, Producer }
+import akka.kafka.{ ConsumerSettings, ProducerMessage, ProducerSettings, Subscriptions }
+import akka.stream.{ ActorMaterializer, Materializer }
 import org.apache.kafka.clients.producer.ProducerRecord
-import org.apache.kafka.common.serialization.{Deserializer, Serializer}
+import org.apache.kafka.common.serialization.{ Deserializer, Serializer }
 import play.api.libs.ws.WSClient
-import play.api.libs.ws.ahc.{AhcWSClient, AhcWSClientConfig}
+import play.api.libs.ws.ahc.{ AhcWSClient, AhcWSClientConfig }
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 object GoogleClient extends App {
   implicit val system: ActorSystem = ActorSystem()
