@@ -11,8 +11,8 @@ import akka.stream.{ ActorMaterializer, Materializer }
 import com.sksamuel.avro4s.RecordFormat
 import org.apache.avro.generic.GenericRecord
 import org.apache.kafka.streams.kstream.internals.ScalaKStreamBuilder
-import play.api.libs.ws.WSClient
-import play.api.libs.ws.ahc.{ AhcWSClient, AhcWSClientConfig }
+import play.api.libs.ws._
+import play.api.libs.ws.ahc._
 
 import scala.concurrent.{ ExecutionContext, Future }
 
@@ -34,9 +34,9 @@ object GoogleClient extends App {
   implicit val ec: ExecutionContext = system.dispatcher
   implicit val mat: Materializer = ActorMaterializer()
 
-  val ws = AhcWSClient(AhcWSClientConfig(maxRequestRetry = 0))(mat)
+  val ws = StandaloneAhcWSClient(AhcWSClientConfig(maxRequestRetry = 0))(mat)
 
-  def callGoogle(ws: WSClient): Future[GoogleResults] = {
+  def callGoogle(ws: StandaloneAhcWSClient): Future[GoogleResults] = {
     ws.url("https://www.google.nl").get().map(_.body)
   }.map(GoogleResults.apply)
 
