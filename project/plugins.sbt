@@ -1,7 +1,7 @@
 // https://bintray.com/lagom/sbt-plugin-releases/lagom-sbt-plugin
 addSbtPlugin("com.lightbend.lagom" % "lagom-sbt-plugin" % "1.3.0")
 
-addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.5.12")
+addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.6.0-M1")
 
 addSbtPlugin("org.scalariform" % "sbt-scalariform" % "1.6.0")
 

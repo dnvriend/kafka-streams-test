@@ -60,13 +60,11 @@ class DefaultKafkaProducer(cb: CircuitBreaker)(implicit system: ActorSystem, mat
   def produce[K, V](producerRecord: ProducerRecord[K, V], sink: Sink[ProducerRecord[K, V], Future[Done]]): Future[Done] =
     cb.withCircuitBreaker(Source.single(producerRecord).runWith(sink))
 
-  def produceJson[A: Format](topic: String, key: String, value: A): Future[Unit] = {
-    produce(new ProducerRecord[String, String](topic, key, Json.toJson(value).toString), stringSerializerSink)
-      .map(_ => ())
-  }
+  def produceJson[A: Format](topic: String, key: String, value: A): Future[Unit] = for {
+    _ <- produce(new ProducerRecord[String, String](topic, key, Json.toJson(value).toString), stringSerializerSink)
+  } yield ()
 
-  def produceAvro[A](topic: String, key: String, value: A)(implicit recordFormat: RecordFormat[A]): Future[Unit] = {
-    produce(new ProducerRecord[String, AnyRef](topic, key, recordFormat.to(value)), avroSerializerSink)
-      .map(_ => ())
-  }
+  def produceAvro[A](topic: String, key: String, value: A)(implicit recordFormat: RecordFormat[A]): Future[Unit] = for {
+    _ <- produce(new ProducerRecord[String, AnyRef](topic, key, recordFormat.to(value)), avroSerializerSink)
+  } yield ()
 }

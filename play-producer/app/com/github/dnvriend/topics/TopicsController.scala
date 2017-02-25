@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.dnvriend.person
+package com.github.dnvriend.topics
 
 import java.nio.file.Paths
 import java.nio.file.StandardOpenOption._
@@ -29,7 +29,7 @@ import akka.util.ByteString
 import com.sksamuel.avro4s.{ AvroSchema, RecordFormat }
 import org.slf4j.{ Logger, LoggerFactory }
 import play.api.libs.json.{ Format, Json }
-import play.api.mvc.{ Action, AnyContent, Controller, Request }
+import play.api.mvc._
 import play.modules.kafka.KafkaProducer
 
 import scala.compat.Platform
@@ -50,20 +50,31 @@ case object CreatePersonCmd {
   implicit val schema = AvroSchema[CreatePersonCmd]
 }
 
-class PersonController @Inject() (producer: KafkaProducer, cb: CircuitBreaker)(implicit ec: ExecutionContext) extends Controller {
+final case class AddNumber(nr: Int)
+
+object AddNumber {
+  implicit val format = Json.format[AddNumber]
+}
+
+class TopicsController @Inject() (producer: KafkaProducer, cb: CircuitBreaker, components: ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(components) {
   val log: Logger = LoggerFactory.getLogger(this.getClass)
   def randomId: String = UUID.randomUUID.toString
 
-  def entityAs[A: Format](implicit req: Request[AnyContent]): Try[A] =
-    Try(req.body.asJson.map(_.as[A]).get)
-
-  def createPerson = Action.async { implicit req =>
+  def createPerson = Action(parse.json[CreatePerson]).async { (req: Request[CreatePerson]) =>
     val result = for {
-      person <- Future.fromTry(entityAs[CreatePerson])
+      person <- Future.fromTry(Try(req.body))
       id = randomId
       cmd = CreatePersonCmd(id, person.name, person.age.toInt)
       _ <- producer.produceJson("PersonCreatedJson", id, cmd) *> producer.produceAvro("PersonCreated", id, cmd)
     } yield Ok(Json.toJson(cmd))
+
+    cb.withCircuitBreaker(result)
+  }
+
+  def addNumber = Action(parse.json[AddNumber]).async { (req: Request[AddNumber]) =>
+    val result = for {
+      result <- producer.produceJson("AddNumber", randomId, req.body)
+    } yield Ok(result.toString)
 
     cb.withCircuitBreaker(result)
   }
