@@ -25,8 +25,6 @@ object KafkaConfig {
     // A list of host/port pairs to use for establishing the initial connection to the Kafka cluster
     //
     StreamsConfig.BOOTSTRAP_SERVERS_CONFIG -> "localhost:9092",
-    // Zookeeper connect string for Kafka topic management
-    StreamsConfig.ZOOKEEPER_CONNECT_CONFIG -> "localhost:2181",
     // key deserializer
     StreamsConfig.KEY_SERDE_CLASS_CONFIG -> Serdes.String.getClass.getName,
     // value deserializer
@@ -34,9 +32,9 @@ object KafkaConfig {
 
     ConsumerConfig.GROUP_ID_CONFIG -> "group-foo",
     ConsumerConfig.AUTO_OFFSET_RESET_CONFIG -> "earliest",
-    "schema.registry.url" -> "http://localhost:8081",
-    "producer.interceptor.classes" -> "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor",
-    "consumer.interceptor.classes" -> "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor"
+    "schema.registry.url" -> "http://localhost:8081"
+//    "producer.interceptor.classes" -> "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor",
+//    "consumer.interceptor.classes" -> "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor"
   )
 
   def config(applicationId: String): Properties = {

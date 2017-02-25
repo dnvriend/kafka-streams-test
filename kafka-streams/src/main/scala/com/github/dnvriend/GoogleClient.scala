@@ -10,8 +10,8 @@ import akka.actor.ActorSystem
 import akka.stream.{ ActorMaterializer, Materializer }
 import com.sksamuel.avro4s.RecordFormat
 import org.apache.avro.generic.GenericRecord
-import org.apache.kafka.streams.kstream.internals.ScalaKStreamBuilder
-import play.api.libs.ws._
+import org.apache.kafka.streams.kstream.KStreamBuilder
+import org.apache.kafka.streams.kstream.internals.ScalaDsl._
 import play.api.libs.ws.ahc._
 
 import scala.concurrent.{ ExecutionContext, Future }
@@ -42,11 +42,12 @@ object GoogleClient extends App {
 
   def randomId: String = UUID.randomUUID().toString
 
-  ScalaKStreamBuilder(KafkaConfig.config("google-results-" + randomId))
-    .streamScalaDsl[String, GenericRecord]("PersonCreatedAvro")
+  implicit val builder = new KStreamBuilder()
+  implicit val config = KafkaConfig.config("google-results-" + randomId)
+
+  builder.stream[String, GenericRecord]("PersonCreatedAvro")
     .parseFromAvro[PersonCreated]
     .mapAsync(_ => callGoogle(ws))
     .mapToAvro
-    .toTopic("GoogleResults")
-    .start()
+    .runTopic("GoogleResults")
 }

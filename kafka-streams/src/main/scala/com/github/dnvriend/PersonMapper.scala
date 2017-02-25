@@ -6,7 +6,8 @@ package com.github.dnvriend
 
 import com.sksamuel.avro4s.RecordFormat
 import org.apache.avro.generic.GenericRecord
-import org.apache.kafka.streams.kstream.internals.ScalaKStreamBuilder
+import org.apache.kafka.streams.kstream.KStreamBuilder
+import org.apache.kafka.streams.kstream.internals.ScalaDsl._
 
 import scala.io.Source
 import scala.util.Random
@@ -30,14 +31,15 @@ object PersonMapper extends App {
 
   def random(xs: List[String]): String = xs.drop(Random.nextInt(xs.length)).headOption.getOrElse("No entry")
 
-  ScalaKStreamBuilder(KafkaConfig.config("person-mapper"))
-    .streamScalaDsl[String, GenericRecord]("PersonCreatedAvro")
+  implicit val builder = new KStreamBuilder()
+  implicit val config = KafkaConfig.config("person-mapper")
+
+  builder.stream[String, GenericRecord]("PersonCreatedAvro")
     .parseFromAvro[PersonCreated]
-    .map { event =>
+    .mapV { event =>
       println("Mapping and producing: " + event)
       event.copy(name = s"${random(names)} ${random(lastNames)}")
     }
     .mapToAvro
-    .toTopic("MappedPersonCreatedAvro")
-    .start()
+    .runTopic("MappedPersonCreatedAvro")
 }

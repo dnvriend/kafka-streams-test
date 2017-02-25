@@ -6,12 +6,15 @@ package com.github.dnvriend
 
 import com.sksamuel.avro4s.RecordFormat
 import org.apache.avro.generic.GenericRecord
-import org.apache.kafka.streams.kstream.internals.ScalaKStreamBuilder
+import org.apache.kafka.streams.kstream.KStreamBuilder
+import org.apache.kafka.streams.kstream.internals.ScalaDsl._
 
 import scala.language.implicitConversions
 
 object PersonForeachMapper extends App {
+
   final case class PersonCreated(id: String, name: String, age: Int, married: Option[Boolean] = None, children: Int = 0)
+
   object PersonCreated {
     implicit val recordFormat = RecordFormat[PersonCreated]
   }
@@ -20,11 +23,13 @@ object PersonForeachMapper extends App {
 
   var count = 0L
 
-  ScalaKStreamBuilder(KafkaConfig.config("person-foreach-mapper"))
-    .streamScalaDsl[String, GenericRecord]("MappedPersonCreatedAvro")
+  implicit val builder = new KStreamBuilder()
+  implicit val config = KafkaConfig.config("person-foreach-mapper")
+
+  builder.stream[String, GenericRecord]("MappedPersonCreatedAvro")
     .parseFromAvro[PersonCreated]
-    .foreach { (key, value) =>
+    .runForeach { (key, value) =>
       count += 1
       println(s"==> [PersonForeachMapper - $count] ==> key='$key', value='$value'")
-    }.start()
+    }
 }

@@ -2,10 +2,13 @@ package com.github.dnvriend
 
 import com.sksamuel.avro4s.RecordFormat
 import org.apache.avro.generic.GenericRecord
-import org.apache.kafka.streams.kstream.internals.ScalaKStreamBuilder
+import org.apache.kafka.streams.kstream.KStreamBuilder
+import org.apache.kafka.streams.kstream.internals.ScalaDsl._
 
 object UpdatesForeach extends App {
+
   final case class Update(name: String, count: Int)
+
   object Update {
     implicit val recordFormat = RecordFormat[Update]
   }
@@ -14,11 +17,13 @@ object UpdatesForeach extends App {
 
   var count = 0L
 
-  ScalaKStreamBuilder(KafkaConfig.config("updates-foreach"))
-    .streamScalaDsl[String, GenericRecord]("Updatess")
+  implicit val builder = new KStreamBuilder()
+  implicit val config = KafkaConfig.config("updates-foreach")
+
+  builder.stream[String, GenericRecord]("Updatess")
     .parseFromAvro[Update]
-    .foreach { (key, value) =>
+    .runForeach { (key, value) =>
       count += 1
       println(s"==> [PersonForeachMapper - $count] ==> key='$key', value='$value'")
-    }.start()
+    }
 }
