@@ -37,6 +37,7 @@ import scala.concurrent.{ ExecutionContext, Future }
 import scala.util.Try
 import scalaz.syntax.applicative._
 import scalaz.std.scalaFuture._
+import TopicsUtil._
 
 final case class CreatePerson(name: String, age: Long)
 object CreatePerson {
@@ -54,16 +55,24 @@ final case class AddNumber(nr: Int)
 
 object AddNumber {
   implicit val format = Json.format[AddNumber]
+  implicit val schema = AvroSchema[AddNumber]
+}
+
+object TopicsUtil {
+  def randomId(): String = UUID.randomUUID.toString
+  def now(): String = {
+    val date = new java.util.Date()
+    new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(date)
+  }
 }
 
 class TopicsController @Inject() (producer: KafkaProducer, cb: CircuitBreaker, components: ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(components) {
   val log: Logger = LoggerFactory.getLogger(this.getClass)
-  def randomId: String = UUID.randomUUID.toString
 
   def createPerson = Action(parse.json[CreatePerson]).async { (req: Request[CreatePerson]) =>
     val result = for {
-      person <- Future.fromTry(Try(req.body))
-      id = randomId
+      person <- Future(req.body)
+      id <- Future(randomId())
       cmd = CreatePersonCmd(id, person.name, person.age.toInt)
       _ <- producer.produceJson("PersonCreatedJson", id, cmd) *> producer.produceAvro("PersonCreated", id, cmd)
     } yield Ok(Json.toJson(cmd))
@@ -73,8 +82,9 @@ class TopicsController @Inject() (producer: KafkaProducer, cb: CircuitBreaker, c
 
   def addNumber = Action(parse.json[AddNumber]).async { (req: Request[AddNumber]) =>
     val result = for {
-      result <- producer.produceJson("AddNumber", randomId, req.body)
-    } yield Ok(result.toString)
+      id <- Future(randomId())
+      _ <- producer.produceJson("AddNumber", id, req.body) *> producer.produceAvro("AddNumberAvro", id, req.body)
+    } yield Ok(id)
 
     cb.withCircuitBreaker(result)
   }
