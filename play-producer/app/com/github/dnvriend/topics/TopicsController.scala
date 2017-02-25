@@ -82,9 +82,8 @@ class TopicsController @Inject() (producer: KafkaProducer, cb: CircuitBreaker, c
 
   def addNumber = Action(parse.json[AddNumber]).async { (req: Request[AddNumber]) =>
     val result = for {
-      id <- Future(randomId())
-      _ <- producer.produceJson("AddNumber", id, req.body) *> producer.produceAvro("AddNumberAvro", id, req.body)
-    } yield Ok(id)
+      _ <- producer.produceJson("AddNumber", "number", req.body) *> producer.produceAvro("AddNumberAvro", "number", req.body)
+    } yield Ok(Json.toJson(req.body))
 
     cb.withCircuitBreaker(result)
   }

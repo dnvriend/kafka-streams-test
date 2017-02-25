@@ -2,4 +2,5 @@
 source common.sh
 $KAFKA_HOME/bin/kafka-console-consumer --topic $1 \
          --bootstrap-server localhost:9092 \
+         --property print.key=true \
          --from-beginning
