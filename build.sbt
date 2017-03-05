@@ -8,9 +8,9 @@ organization in ThisBuild := "com.github.dnvriend"
 
 val akkaVersion = "2.4.17"
 val kafkaVersion = "0.10.2.0"
-val confluentVersion = "3.1.2"
+val confluentVersion = "3.2.0"
 
-libraryDependencies += "com.softwaremill.macwire" %% "macros" % "2.2.5" % "provided"
+libraryDependencies += "com.softwaremill.macwire" %% "macros" % "2.3.0" % "provided"
 
 libraryDependencies += lagomScaladslApi
 libraryDependencies += lagomScaladslPersistenceCassandra
@@ -54,8 +54,8 @@ lazy val nativeClientTest = (project in file("native-client-test"))
     scalaVersion := "2.12.1",
     // https://github.com/sksamuel/avro4s
     libraryDependencies += "com.sksamuel.avro4s" %% "avro4s-core" % "1.6.4",
-    libraryDependencies += "io.confluent" % "kafka-avro-serializer" % "3.1.2",
-    libraryDependencies += "org.apache.kafka" % "kafka-streams" % "0.10.1.1-cp1",
+    libraryDependencies += "io.confluent" % "kafka-avro-serializer" % "3.2.0",
+    libraryDependencies += "org.apache.kafka" % "kafka-streams" % "0.10.2.0",
     libraryDependencies += "com.typesafe.akka" %% "akka-stream-kafka" % "0.13"
   ).enablePlugins(AutomateHeaderPlugin)
 

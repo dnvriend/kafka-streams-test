@@ -10,11 +10,11 @@ resolvers += "Confluent Maven Repo" at "http://packages.confluent.io/maven/"
 libraryDependencies += "com.typesafe.play" %% "play-ws" % "2.5.12"
 libraryDependencies += "com.typesafe.play" %% "play-json" % "2.5.12"
 
-libraryDependencies += "org.scalaz" %% "scalaz-core" % "7.2.8"
+libraryDependencies += "org.scalaz" %% "scalaz-core" % "7.2.9"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1"
 libraryDependencies += "com.sksamuel.avro4s" %% "avro4s-core" % "1.6.4"
-libraryDependencies += "io.confluent" % "kafka-avro-serializer" % "3.1.2"
-libraryDependencies += "org.apache.kafka" % "kafka-streams" % "0.10.1.1-cp1"
+libraryDependencies += "io.confluent" % "kafka-avro-serializer" % "3.2.0"
+libraryDependencies += "org.apache.kafka" % "kafka-streams" % "0.10.2.0"
 libraryDependencies += "com.typesafe.akka" %% "akka-stream-kafka" % "0.13"
 
 // testing configuration

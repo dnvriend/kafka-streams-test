@@ -1,13 +1,13 @@
 package com.github.dnvriend
 
-import java.util.{Properties, UUID}
+import java.util.{ Properties, UUID }
 
 import com.sksamuel.avro4s.RecordFormat
 import org.apache.avro.generic.GenericRecord
-import org.apache.kafka.streams.kstream.{KStreamBuilder, TimeWindows, Windows}
-import org.apache.kafka.streams.kstream.internals.ScalaDsl._
+import org.apache.kafka.streams.kstream.{ KStreamBuilder, TimeWindows, Windows }
 import org.apache.kafka.streams.kstream.internals.TimeWindow
-import org.apache.kafka.streams.state.{QueryableStoreTypes, ReadOnlyKeyValueStore}
+import org.apache.kafka.streams.state.{ QueryableStoreTypes, ReadOnlyKeyValueStore }
+import org.apache.kafka.streams.scaladsl.ScalaDsl._
 
 import scala.concurrent.duration._
 

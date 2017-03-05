@@ -1,7 +1,7 @@
 scalaVersion := "2.12.1"
 
 val kafkaVersion = "0.10.2.0"
-val confluentVersion = "3.1.2"
+val confluentVersion = "3.2.0"
 
 libraryDependencies += "org.apache.kafka" % "kafka-streams" % kafkaVersion
 libraryDependencies += "com.typesafe.akka" %% "akka-stream-kafka" % "0.13"

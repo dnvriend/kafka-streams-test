@@ -3,7 +3,7 @@ package com.github.dnvriend
 import com.sksamuel.avro4s.RecordFormat
 import org.apache.avro.generic.GenericRecord
 import org.apache.kafka.streams.kstream.KStreamBuilder
-import org.apache.kafka.streams.kstream.internals.ScalaDsl._
+import org.apache.kafka.streams.scaladsl.ScalaDsl._
 
 object UpdatesForeach extends App {
 

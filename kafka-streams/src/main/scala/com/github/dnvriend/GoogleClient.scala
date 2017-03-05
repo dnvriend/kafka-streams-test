@@ -11,7 +11,7 @@ import akka.stream.{ ActorMaterializer, Materializer }
 import com.sksamuel.avro4s.RecordFormat
 import org.apache.avro.generic.GenericRecord
 import org.apache.kafka.streams.kstream.KStreamBuilder
-import org.apache.kafka.streams.kstream.internals.ScalaDsl._
+import org.apache.kafka.streams.scaladsl.ScalaDsl._
 import play.api.libs.ws.ahc._
 
 import scala.concurrent.{ ExecutionContext, Future }

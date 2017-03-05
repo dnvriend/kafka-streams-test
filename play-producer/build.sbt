@@ -15,7 +15,7 @@ libraryDependencies += "com.github.mpilquist" %% "simulacrum" % "0.10.0"
 
 // kafka
 libraryDependencies += "com.typesafe.akka" %% "akka-stream-kafka" % "0.13"
-libraryDependencies += "io.confluent" % "kafka-avro-serializer" % "3.1.2"
+libraryDependencies += "io.confluent" % "kafka-avro-serializer" % "3.2.0"
 libraryDependencies += "org.apache.kafka" % "kafka-streams" % kafkaVersion
 libraryDependencies += "com.sksamuel.avro4s" %% "avro4s-core" % "1.6.4"
 

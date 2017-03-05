@@ -1,3 +1,3 @@
 #!/bin/bash
-export KAFKA_HOME=~/projects/confluent-3.1.2/
+export KAFKA_HOME=~/projects/confluent-3.2.0/
 
