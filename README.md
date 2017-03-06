@@ -1,5 +1,5 @@
 # kafka-streams-test
-A small study project on [Kafka-Streams](http://docs.confluent.io/3.1.2/streams) and the [Confluent Platform](http://docs.confluent.io/3.1.2/)
+A small study project on [Kafka-Streams](http://docs.confluent.io/3.2.0/streams) and the [Confluent Platform](http://docs.confluent.io/3.2.0/)
 which is a stream data platform that leverages [Apache Kafka](http://kafka.apache.org/) to enable you to organize and manage data from many
 different sources with one reliable, high performance system. The Confluent Platform can be downloaded [here](https://www.confluent.io/download-center/).
 
@@ -34,6 +34,19 @@ Launch the second application:
 ```
 sbt "project personMapper" "runMain com.github.dnvriend.Application2"
 ```
+
+## Kafka Ports
+The following ports are in use by kafka:
+
+---------- | ----------
+Component	Default Port
+---------- | ----------
+Zookeeper |	2181
+Apache Kafka brokers (plain text) |	9092
+Schema Registry REST API | 8081
+REST Proxy | 8082
+Kafka Connect REST API | 8083
+Confluent Control Center | 9021
 
 ## Youtube
 - [(0'04 hr) Kafka Streams Overview - Confluent.io](https://www.youtube.com/watch?v=V3m6ikfMxOQ)
