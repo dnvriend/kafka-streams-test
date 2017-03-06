@@ -38,9 +38,8 @@ sbt "project personMapper" "runMain com.github.dnvriend.Application2"
 ## Kafka Ports
 The following ports are in use by kafka:
 
----------- | ----------
-Component	Default Port
----------- | ----------
+Component  | Default Port
+--- | ---
 Zookeeper |	2181
 Apache Kafka brokers (plain text) |	9092
 Schema Registry REST API | 8081
