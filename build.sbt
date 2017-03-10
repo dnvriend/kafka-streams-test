@@ -56,7 +56,7 @@ lazy val nativeClientTest = (project in file("native-client-test"))
     libraryDependencies += "com.sksamuel.avro4s" %% "avro4s-core" % "1.6.4",
     libraryDependencies += "io.confluent" % "kafka-avro-serializer" % "3.2.0",
     libraryDependencies += "org.apache.kafka" % "kafka-streams" % "0.10.2.0",
-    libraryDependencies += "com.typesafe.akka" %% "akka-stream-kafka" % "0.13"
+    libraryDependencies += "com.typesafe.akka" %% "akka-stream-kafka" % "0.14"
   ).enablePlugins(AutomateHeaderPlugin)
 
 lazy val playProducer =

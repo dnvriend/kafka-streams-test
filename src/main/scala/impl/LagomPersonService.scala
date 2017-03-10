@@ -19,21 +19,29 @@ package impl
 import java.util.UUID
 import javax.inject.Inject
 
-import akka.actor.{ Actor, ActorSystem, Cancellable, Props }
-import api.{ CreatePersonRequestMessage, PersonService, TopicMessagePersonCreated }
+import akka.NotUsed
+import akka.actor.{Actor, ActorSystem, Cancellable, Props}
+import api.{CreatePersonRequestMessage, PersonService, TopicMessagePersonCreated}
+import auth.LoggingServiceCall
 import com.lightbend.lagom.scaladsl.api.ServiceCall
 import com.lightbend.lagom.scaladsl.api.broker.Topic
 import com.lightbend.lagom.scaladsl.broker.TopicProducer
 import com.lightbend.lagom.scaladsl.persistence.PersistentEntity.ReplyType
 import com.lightbend.lagom.scaladsl.persistence._
+import com.lightbend.lagom.scaladsl.server.ServerServiceCall
 import play.api.libs.json.Json
 
 import scala.compat.Platform
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Random
 
 class LagomPersonService @Inject() (persistentEntityRegistry: PersistentEntityRegistry, system: ActorSystem)(implicit ec: ExecutionContext) extends PersonService {
   val creator = system.actorOf(Props(new PersonCreator(persistentEntityRegistry)))
+
+  override def sayHello(name: String): ServiceCall[NotUsed, String] =
+    LoggingServiceCall.logged(ServerServiceCall { _ =>
+      Future.successful("Hello")
+    })
 
   override def createPerson: ServiceCall[CreatePersonRequestMessage, UUID] = ServiceCall { (person: CreatePersonRequestMessage) =>
     val id: UUID = UUID.randomUUID()

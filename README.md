@@ -48,6 +48,7 @@ Kafka Connect REST API | 8083
 Confluent Control Center | 9021
 
 ## Youtube
+- [(0'59 hr) Building Streaming And Fast Data Applications With Spark, Mesos, Akka, Cassandra And Kafka - Sean Glover](https://www.youtube.com/watch?v=xRcD_ConPtg)
 - [(0'04 hr) Kafka Streams Overview - Confluent.io](https://www.youtube.com/watch?v=V3m6ikfMxOQ)
 - [(0'39 hr) ETL Is Dead, Long Live Streams: real-time streams w/ Apache Kafka - Neha Narkhede](https://www.youtube.com/watch?v=I32hmY4diFY)
 - [(0'45 hr) Applications in the Emerging World of Stream Processing • Neha Narkhede](https://www.youtube.com/watch?v=WuBQBTET8Qg)

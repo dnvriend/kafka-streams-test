@@ -18,6 +18,8 @@ package api
 
 import java.util.UUID
 
+import akka.NotUsed
+import auth.LoggingServiceCall
 import com.lightbend.lagom.scaladsl.api.Service._
 import com.lightbend.lagom.scaladsl.api._
 import com.lightbend.lagom.scaladsl.api.broker.Topic
@@ -41,12 +43,14 @@ final case class TopicMessagePersonCreated(id: UUID, name: String, age: Int, tim
 trait PersonService extends Service {
   def createPerson: ServiceCall[CreatePersonRequestMessage, UUID]
   def personCreatedTopic: Topic[TopicMessagePersonCreated]
+  def sayHello(name: String): ServiceCall[NotUsed, String]
 
   override def descriptor: Descriptor = {
     named("person-api")
       .withCalls(
         // http post :9000/api/person name=foo age:=50
-        restCall(Method.POST, "/api/person", createPerson _)
+        restCall(Method.POST, "/api/person", createPerson _),
+        pathCall("/api/hello/:name", sayHello _)
       ).withTopics(
           topic(PersonApi.TopicName, personCreatedTopic)
         ).withAutoAcl(true)
